@@ -1,0 +1,30 @@
+version: 0.2
+phases:
+    install:
+        commands:
+            - cp ${CODEBUILD_SRC_DIR}/back/config.template.yml ${CODEBUILD_SRC_DIR}/back/config.yml
+            - sed -i "s;BUILD_ENV;${BUILD_ENV};g"                                       ${CODEBUILD_SRC_DIR}/back/config.yml
+            - sed -i "s;BUILD_STAGE;${BUILD_STAGE};g"                                   ${CODEBUILD_SRC_DIR}/back/config.yml
+            - sed -i "s;BUILD_LAMBDA_ROLE_ARN;${BUILD_LAMBDA_ROLE_ARN};g"               ${CODEBUILD_SRC_DIR}/back/config.yml
+            - sed -i "s;BUILD_API_ID;${BUILD_API_ID};g"                                 ${CODEBUILD_SRC_DIR}/back/config.yml
+            - sed -i "s;BUILD_API_ROOT_ID;${BUILD_API_ROOT_ID};g"                       ${CODEBUILD_SRC_DIR}/back/config.yml
+            - sed -i "s;BUILD_COGNITO_POOL_ARN;${BUILD_COGNITO_POOL_ARN};g"             ${CODEBUILD_SRC_DIR}/back/config.yml
+            - sed -i "s;BUILD_WST_GRANT_TYPE;${BUILD_WST_GRANT_TYPE};g"                 ${CODEBUILD_SRC_DIR}/back/config.yml
+            - sed -i "s;BUILD_WST_CLIENT_SECRET;${BUILD_WST_CLIENT_SECRET};g"           ${CODEBUILD_SRC_DIR}/back/config.yml
+            - sed -i "s;BUILD_WST_CLIENT_ID;${BUILD_WST_CLIENT_ID};g"                   ${CODEBUILD_SRC_DIR}/back/config.yml
+            - sed -i "s;BUILD_WST_SCOPE;${BUILD_WST_SCOPE};g"                           ${CODEBUILD_SRC_DIR}/back/config.yml
+            - sed -i "s;BUILD_WST_HOST;${BUILD_WST_HOST};g"                             ${CODEBUILD_SRC_DIR}/back/config.yml
+            - echo Installing serverless...
+            - npm install -g serverless@1.44.0
+            - echo Installing source NPM dependencies...
+            - npm install
+    build:
+        commands:
+            - cd back
+            - cat config.yml
+            - cat serverless.yaml
+            - serverless deploy
+artifacts:
+    files:
+        – serverless.yml
+    discard-paths: yes

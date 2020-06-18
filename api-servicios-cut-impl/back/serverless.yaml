@@ -1,0 +1,199 @@
+ service: api-servicios-cut
+ 
+ custom: ${file(./config.yml)}
+ 
+ provider:
+   name: aws
+   runtime: nodejs10.x
+   region: us-east-1
+   stage: ${self:custom.stage}
+   role: ${self:custom.role}
+   stackName: tgr-${self:custom.env}-${self:service}
+   stackTags:
+     Application: ${self:service}
+     Env: ${self:custom.stage}
+   apiGateway:
+     restApiId: ${self:custom.apiId}
+     restApiRootResourceId: ${self:custom.apiRootId}
+   environment:
+     REST_TOKEN_GRANT_TYPE: ${self:custom.wsTierra.wsGrantType}
+     REST_TOKEN_SCOPE: ${self:custom.wsTierra.wsScope}
+     REST_TOKEN_CLIENT_ID: ${self:custom.wsTierra.wsClientId}
+     REST_TOKEN_CLIENT_SECRET: ${self:custom.wsTierra.wsClientSecret}
+     HOST: ${self:custom.wsTierra.wsHost}
+     ENV: ${self:custom.env}
+ 
+    
+ package:
+   exclude:
+   - package-lock.json
+   - package.json
+ 
+ functions:
+   consultaDeudas:
+     name: tgr-${self:custom.env}-${self:service}-consultaDeudas
+     handler: consultaDeudasCUT.consultaDeudas
+     timeout: 30
+     events:
+     - http:
+         path: liquida-deudas/v1/deuda
+         method: post
+         cors: true
+         authorizer: 
+           arn: ${self:custom.cognito}
+           scopes:
+             - tgr-${self:custom.env}-api-servicios-cut/all
+ 
+   fechaActual:
+     name: tgr-${self:custom.env}-${self:service}-fechaServidorPDF
+     handler: fechaServidorPDF.fechaActual
+     timeout: 30
+     events:
+     - http:
+         path: liquida-deudas-frontera/v1/fechas/actual
+         method: get
+         cors: true
+         authorizer: 
+           arn: ${self:custom.cognito}
+           scopes:
+             - tgr-${self:custom.env}-api-servicios-cut/all
+           
+   liquidaDeudasFolio:
+     name: tgr-${self:custom.env}-${self:service}-liquidaDeudasFolio
+     handler: liquidaDeudasFolio.liquidaDeudasFolio
+     timeout: 30
+     events:
+     - http:
+         path: liquida-deudas-frontera/v1/deudas/{folio}
+         method: get
+         cors: true
+         authorizer: 
+           arn: ${self:custom.cognito}
+           scopes:
+             - tgr-${self:custom.env}-api-servicios-cut/all
+           
+   liquidaDeudasPasaporte:
+     name: tgr-${self:custom.env}-${self:service}-liquidaDeudasPasaporte
+     handler: liquidaDeudasPasaporte.liquidaDeudasPasaporte
+     timeout: 30
+     events:
+     - http:
+         path: liquida-deudas-frontera/v1/deudas/contribuyentes/{pasaporte}
+         method: get
+         cors: true
+         authorizer: 
+           arn: ${self:custom.cognito}
+           scopes:
+             - tgr-${self:custom.env}-api-servicios-cut/all
+             
+   consultaDeudasRolTotal:
+     name: tgr-${self:custom.env}-${self:service}-consultaDeudasRolTotal
+     handler: consultaDeudasRolTotal.consultaDeudasRolTotal
+     timeout: 30
+     events:
+     - http:
+         path: servicios-recaudacion/v1/liquidacion/deudasrol
+         method: get
+         cors: true
+         authorizer: 
+           arn: ${self:custom.cognito}
+           scopes:
+            - tgr-${self:custom.env}-api-servicios-cut/all
+            
+   consultaDeudasRutTotal:
+     name: tgr-${self:custom.env}-${self:service}-consultaDeudasRutTotal
+     handler: consultaDeudasRutTotal.consultaDeudasRutTotal
+     timeout: 30
+     events:
+     - http:
+         path: servicios-recaudacion/v1/liquidacion/deudasrut
+         method: get
+         cors: true
+         authorizer: 
+           arn: ${self:custom.cognito}
+           scopes:
+            - tgr-${self:custom.env}-api-servicios-cut/all             
+            
+   ingresaMultiAr:
+     name: tgr-${self:custom.env}-${self:service}-ingresaMultiAr
+     handler: ingresaMultiAr.ingresaMultiAr
+     timeout: 30
+     events:
+     - http:
+         path: servicios-recaudacion/v1/liquidacion/ingresamultiar
+         method: post
+         cors: true
+         authorizer: 
+           arn: ${self:custom.cognito}
+           scopes:
+            - tgr-${self:custom.env}-api-servicios-cut/all
+
+   consultaCuentasMonex:
+     name: tgr-${self:custom.env}-${self:service}-consultaCuentasMonex
+     handler: consultaCuentasMonex.consultaCuentasMonex
+     timeout: 30
+     events:
+     - http:
+         path: servicios-recaudacion/v1/monex/cuentasme
+         method: get
+         cors: true
+         authorizer: 
+           arn: ${self:custom.cognito}
+           scopes:
+            - tgr-${self:custom.env}-api-servicios-cut/all
+            
+   consultaMovsMonex:
+     name: tgr-${self:custom.env}-${self:service}-consultaMovsMonex
+     handler: consultaMovsMonex.consultaMovsMonex
+     timeout: 30
+     events:
+     - http:
+         path: servicios-recaudacion/v1/monex/movsme
+         method: get
+         cors: true
+         authorizer: 
+           arn: ${self:custom.cognito}
+           scopes:
+            - tgr-${self:custom.env}-api-servicios-cut/all
+            
+   consultaItemsMonex:
+     name: tgr-${self:custom.env}-${self:service}-consultaItemsMonex
+     handler: consultaItemsMonex.consultaItemsMonex
+     timeout: 30
+     events:
+     - http:
+         path: servicios-recaudacion/v1/monex/itemsme
+         method: get
+         cors: true
+         authorizer: 
+           arn: ${self:custom.cognito}
+           scopes:
+            - tgr-${self:custom.env}-api-servicios-cut/all
+
+   aplicaPagoCuentasMonex:
+     name: tgr-${self:custom.env}-${self:service}-aplicaPagoCuentasMonex
+     handler: aplicaPagoCuentasMonex.aplicaPagoCuentasMonex
+     timeout: 30
+     events:
+     - http:
+         path: servicios-recaudacion/v1/monex/aplicapago
+         method: post
+         cors: true
+         authorizer: 
+           arn: ${self:custom.cognito}
+           scopes:
+            - tgr-${self:custom.env}-api-servicios-cut/all
+
+   liquidacionCuentasMonex:
+     name: tgr-${self:custom.env}-${self:service}-liquidacionCuentasMonex
+     handler: liquidaCuentasMonex.liquidaCuentasMonex
+     timeout: 30
+     events:
+     - http:
+         path: servicios-recaudacion/v1/monex-liquidacion/liquidacuentas
+         method: post
+         cors: true
+         authorizer: 
+           arn: ${self:custom.cognito}
+           scopes:
+            - tgr-${self:custom.env}-api-servicios-cut/all

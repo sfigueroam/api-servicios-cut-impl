@@ -1,0 +1,16 @@
+region: us-east-1
+stage: BUILD_ENV
+#stage: BUILD_STAGE
+env: BUILD_ENV
+role: BUILD_LAMBDA_ROLE_ARN
+accessControlAllowOrigin: "*"
+apiId: BUILD_API_ID
+apiRootId: BUILD_API_ROOT_ID
+cognito: BUILD_COGNITO_POOL_ARN
+# Para el servicio de deudas
+wsTierra:
+    wsGrantType: BUILD_WST_GRANT_TYPE
+    wsClientSecret: BUILD_WST_CLIENT_SECRET
+    wsClientId: BUILD_WST_CLIENT_ID
+    wsScope: BUILD_WST_SCOPE
+    wsHost: BUILD_WST_HOST
